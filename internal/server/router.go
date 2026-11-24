@@ -16,6 +16,7 @@ import (
 	"github.com/nerinejaponica/api/internal/httpx"
 	"github.com/nerinejaponica/api/internal/middleware"
 	"github.com/nerinejaponica/api/internal/song"
+	"github.com/nerinejaponica/api/internal/landing"
 )
 
 const maxConns = 4
@@ -50,6 +51,7 @@ func New(ctx context.Context) (*Server, error) {
 		httpx.Error(w, http.StatusMethodNotAllowed, "method_not_allowed", "Method tidak didukung untuk endpoint ini.", nil)
 	})
 
+	r.Get("/", landing.Handler)
 	r.Route("/api", func(r chi.Router) {
 		r.Get("/health", healthHandler.Get)
 		r.Mount("/songs", songHandler.Routes())

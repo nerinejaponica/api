@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>nerine-japonica-api</title>
+    <style>
+      :root {
+        --bg: #f6f7f9;
+        --card: #ffffff;
+        --border: #e2e5ea;
+        --text: #1b1f24;
+        --muted: #5f6873;
+        --accent: #16a34a;
+        --warn: #d97706;
+        --danger: #dc2626;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0f1115;
+          --card: #171a20;
+          --border: #2a2f37;
+          --text: #e8eaed;
+          --muted: #9aa3ad;
+          --accent: #22c55e;
+          --warn: #f59e0b;
+          --danger: #ef4444;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 16px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      }
+      main {
+        width: 100%;
+        max-width: 360px;
+        padding: 28px 24px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--card);
+        text-align: center;
+      }
+      .cat {
+        margin-bottom: 16px;
+        font-size: 40px;
+        line-height: 1;
+        white-space: nowrap;
+      }
+      .cat span {
+        display: inline-block;
+      }
+      .ear {
+        transform-origin: 50% 100%;
+        animation: ear-twitch 4s ease-in-out infinite;
+      }
+      .ear.right {
+        animation-delay: 1.3s;
+      }
+      .eye {
+        display: inline-grid;
+      }
+      .eye span {
+        grid-area: 1 / 1;
+      }
+      .eye .open {
+        animation: blink-open 5s infinite;
+      }
+      .eye .shut {
+        opacity: 0;
+        animation: blink-shut 5s infinite;
+      }
+      .tail {
+        transform-origin: 0 100%;
+        animation: tail-swish 1.6s ease-in-out infinite alternate;
+      }
+      @keyframes ear-twitch {
+        0%,
+        80%,
+        100% {
+          transform: rotate(0);
+        }
+        84% {
+          transform: rotate(-18deg);
+        }
+        88% {
+          transform: rotate(8deg);
+        }
+        92% {
+          transform: rotate(0);
+        }
+      }
+      @keyframes blink-open {
+        0%,
+        92%,
+        97%,
+        100% {
+          opacity: 1;
+        }
+        93%,
+        96% {
+          opacity: 0;
+        }
+      }
+      @keyframes blink-shut {
+        0%,
+        92%,
+        97%,
+        100% {
+          opacity: 0;
+        }
+        93%,
+        96% {
+          opacity: 1;
+        }
+      }
+      @keyframes tail-swish {
+        from {
+          transform: rotate(-12deg);
+        }
+        to {
+          transform: rotate(14deg);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .cat span {
+          animation: none;
+        }
+      }
+      h1 {
+        margin: 0 0 8px;
+        font-size: 20px;
+      }
+      p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        margin-right: 6px;
+        border-radius: 50%;
+        background: var(--accent);
+      }
+      a {
+        display: inline-block;
+        margin-top: 20px;
+        color: var(--text);
+        font-size: 14px;
+      }
+      a[aria-busy="true"] {
+        pointer-events: none;
+        opacity: 0.6;
+      }
+      .health {
+        margin-top: 16px;
+        padding: 14px 16px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        text-align: left;
+        font-size: 14px;
+      }
+      .health[hidden],
+      .health [hidden] {
+        display: none;
+      }
+      .health-title {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        font-weight: 600;
+      }
+      .health[data-state="degraded"] .dot {
+        background: var(--warn);
+      }
+      .health[data-state="error"] .dot {
+        background: var(--danger);
+      }
+      .health dl {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 6px 16px;
+        margin: 0;
+      }
+      .health dt {
+        color: var(--muted);
+      }
+      .health dd {
+        margin: 0;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      .health-time {
+        margin-top: 10px;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="cat" aria-hidden="true">
+        <span>₍</span><span class="ear left">^</span
+        ><span class="eye"><span class="open">.</span><span class="shut">-</span></span>
+        <span class="eye"><span class="open">.</span><span class="shut">-</span></span
+        ><span class="ear right">^</span><span>₎</span><span class="tail">Ⳋ</span>
+      </div>
+      <h1>nerine-japonica-api</h1>
+      <p><span class="dot"></span>Service is running</p>
+      <a href="/api/health" id="health-link">Check health</a>
+      <section class="health" id="health-card" aria-live="polite" hidden>
+        <div class="health-title"><span class="dot"></span><span id="health-label"></span></div>
+        <dl id="health-details">
+          <dt>Database</dt>
+          <dd id="health-database"></dd>
+          <dt>Uptime</dt>
+          <dd id="health-uptime"></dd>
+        </dl>
+        <p class="health-time" id="health-time"></p>
+      </section>
+    </main>
+    <script>
+      const link = document.getElementById("health-link")
+      const card = document.getElementById("health-card")
+      const label = document.getElementById("health-label")
+      const details = document.getElementById("health-details")
+      const database = document.getElementById("health-database")
+      const uptime = document.getElementById("health-uptime")
+      const time = document.getElementById("health-time")
+
+      function formatUptime(totalSeconds) {
+        const hours = Math.floor(totalSeconds / 3600)
+        const minutes = Math.floor((totalSeconds % 3600) / 60)
+        const seconds = totalSeconds % 60
+        if (hours > 0) return hours + "h " + minutes + "m"
+        if (minutes > 0) return minutes + "m " + seconds + "s"
+        return seconds + "s"
+      }
+
+      function show(state, text, data) {
+        card.dataset.state = state
+        label.textContent = text
+        details.hidden = !data
+        if (data) {
+          database.textContent = data.database
+          uptime.textContent = formatUptime(data.uptime)
+        }
+        time.textContent = "Checked at " + new Date().toLocaleTimeString()
+        card.hidden = false
+      }
+
+      link.addEventListener("click", async (event) => {
+        event.preventDefault()
+        link.setAttribute("aria-busy", "true")
+        link.textContent = "Checking…"
+        try {
+          const res = await fetch(link.href, { cache: "no-store" })
+          const data = await res.json()
+          if (data.status === "ok") {
+            show("ok", "Healthy", data)
+          } else {
+            show("degraded", "Degraded", data)
+          }
+        } catch {
+          show("error", "Can't reach the API")
+        } finally {
+          link.removeAttribute("aria-busy")
+          link.textContent = "Check again"
+        }
+      })
+    </script>
+  </body>
+</html>
