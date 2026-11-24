@@ -1,0 +1,51 @@
+# --- Rahasia ---
+# Connection string, JWT secret, kunci R2: hanya di .env lokal dan env var Vercel.
+.env
+.env.*
+!.env.example
+
+# --- Data konten (repo public) ---
+# Hasil GET /api/admin/export dan cadangan lain: berisi lirik/terjemahan, jangan di-commit.
+backups/
+exports/
+*.dump
+*.sql.gz
+
+# --- Go ---
+# Binary hasil go build
+/bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+
+# Hasil go test -cover / -coverprofile
+*.out
+coverage.*
+*.coverprofile
+profile.cov
+
+# Workspace lokal (go work)
+go.work
+go.work.sum
+
+# Folder vendor (kita pakai go modules)
+vendor/
+
+# --- Vercel ---
+.vercel/
+
+# --- Claude / AI assistant ---
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+.mcp.json
+
+# --- Editor & OS ---
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+.DS_Store
