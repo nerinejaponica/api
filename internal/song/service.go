@@ -12,8 +12,6 @@ import (
 
 var ErrSlugTaken = errors.New("slug sudah dipakai")
 
-const pgUniqueViolation = "23505"
-
 type Service struct {
 	q *db.Queries
 }

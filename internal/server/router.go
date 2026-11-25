@@ -14,9 +14,9 @@ import (
 	"github.com/nerinejaponica/api/internal/db"
 	"github.com/nerinejaponica/api/internal/health"
 	"github.com/nerinejaponica/api/internal/httpx"
+	"github.com/nerinejaponica/api/internal/landing"
 	"github.com/nerinejaponica/api/internal/middleware"
 	"github.com/nerinejaponica/api/internal/song"
-	"github.com/nerinejaponica/api/internal/landing"
 )
 
 const maxConns = 4

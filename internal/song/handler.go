@@ -23,10 +23,6 @@ func (h *Handler) Routes() chi.Router {
 	return r
 }
 
-type listResponse struct {
-	Data []Response `json:"data"`
-}
-
 func (h *Handler) list(w http.ResponseWriter, r *http.Request) {
 	songs, err := h.svc.List(r.Context())
 	if err != nil {
