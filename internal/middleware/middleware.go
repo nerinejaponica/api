@@ -6,21 +6,25 @@ import (
 	"runtime/debug"
 	"time"
 
+	"github.com/nerinejaponica/api/internal/constant"
 	"github.com/nerinejaponica/api/internal/httpx"
 )
 
 func Recover(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
+			// GET PANIC VALUE
 			rec := recover()
 			if rec == nil {
 				return
 			}
+			// LET THE SERVER HANDLE ABORTED REQUEST
 			if rec == http.ErrAbortHandler {
 				panic(rec)
 			}
+			// LOG PANIC WITH STACK TRACE AND SEND GENERIC ERROR TO CLIENT
 			slog.Error("panic", "method", r.Method, "path", r.URL.Path, "panic", rec, "stack", string(debug.Stack()))
-			httpx.Error(w, http.StatusInternalServerError, "internal_error", "Terjadi kesalahan di server.", nil)
+			httpx.Error(w, http.StatusInternalServerError, constant.CodeInternalError, constant.MsgInternalError, nil)
 		}()
 		next.ServeHTTP(w, r)
 	})
@@ -39,8 +43,10 @@ func (s *statusRecorder) WriteHeader(code int) {
 func Logger(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
+		// WRAP WRITER TO CAPTURE RESPONSE STATUS
 		rec := &statusRecorder{ResponseWriter: w, status: http.StatusOK}
 		next.ServeHTTP(rec, r)
+		// LOG REQUEST AFTER IT IS HANDLED
 		slog.Info("request",
 			"method", r.Method,
 			"path", r.URL.Path,

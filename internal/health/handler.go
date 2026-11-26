@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/nerinejaponica/api/internal/constant"
 	"github.com/nerinejaponica/api/internal/httpx"
 )
 
@@ -25,14 +26,18 @@ type response struct {
 }
 
 func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
+	// LIMIT DATABASE PING TO 3 SECONDS
 	ctx, cancel := context.WithTimeout(r.Context(), 3*time.Second)
 	defer cancel()
 
+	// COUNT UPTIME SINCE HANDLER IS CREATED
 	uptime := int64(time.Since(h.startedAt).Seconds())
 
+	// WHEN PING DATABASE RETURNS ERROR
 	if err := h.pool.Ping(ctx); err != nil {
-		httpx.JSON(w, http.StatusServiceUnavailable, response{Status: "degraded", Database: "down", Uptime: uptime})
+		httpx.JSON(w, http.StatusServiceUnavailable, response{Status: constant.HealthDegraded, Database: constant.DatabaseDown, Uptime: uptime})
 		return
 	}
-	httpx.JSON(w, http.StatusOK, response{Status: "ok", Database: "up", Uptime: uptime})
+	// SUCCESS PING DATABASE
+	httpx.JSON(w, http.StatusOK, response{Status: constant.HealthOK, Database: constant.DatabaseUp, Uptime: uptime})
 }

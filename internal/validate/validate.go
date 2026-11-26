@@ -3,29 +3,30 @@ package validate
 import (
 	"fmt"
 	"regexp"
+
+	"github.com/nerinejaponica/api/internal/constant"
 )
 
 const (
-	MsgRequired   = "wajib diisi"
-	MsgSlugFormat = "hanya huruf kecil, angka, dan tanda hubung (contoh: izayoi-lionheart)"
-
 	SlugMaxLen = 200
 )
 
 var slugPattern = regexp.MustCompile(`^[a-z0-9]+(?:-[a-z0-9]+)*$`)
 
 func MsgMaxLen(n int) string {
-	return fmt.Sprintf("maksimal %d karakter", n)
+	return fmt.Sprintf(constant.MsgMaxLenFmt, n)
 }
 
 func SlugError(slug string) string {
+	// RETURN THE FIRST RULE THAT SLUG VIOLATES
 	switch {
 	case slug == "":
-		return MsgRequired
+		return constant.MsgFieldRequired
 	case len(slug) > SlugMaxLen:
 		return MsgMaxLen(SlugMaxLen)
 	case !slugPattern.MatchString(slug):
-		return MsgSlugFormat
+		return constant.MsgSlugFormat
 	}
+	// EMPTY STRING MEANS SLUG IS VALID
 	return ""
 }

@@ -14,10 +14,12 @@ type Response struct {
 	PublishedAt *time.Time `json:"published_at"`
 }
 
+// WRAPPER FOR LIST RESPONSE
 type listResponse struct {
 	Data []Response `json:"data"`
 }
 
+// MAP DATABASE MODEL INTO API RESPONSE
 func toResponse(s db.Song) Response {
 	return Response{
 		ID:          s.ID,

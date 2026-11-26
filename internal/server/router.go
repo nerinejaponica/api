@@ -11,6 +11,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/nerinejaponica/api/internal/config"
+	"github.com/nerinejaponica/api/internal/constant"
 	"github.com/nerinejaponica/api/internal/db"
 	"github.com/nerinejaponica/api/internal/health"
 	"github.com/nerinejaponica/api/internal/httpx"
@@ -27,30 +28,36 @@ type Server struct {
 }
 
 func New(ctx context.Context) (*Server, error) {
+	// LOAD CONFIGURATION
 	cfg, err := config.Load()
 	if err != nil {
 		return nil, err
 	}
 
+	// INIT DATABASE POOL
 	pool, err := newPool(ctx, cfg.DatabaseURL)
 	if err != nil {
 		return nil, err
 	}
 
+	// INIT HANDLERS AND THEIR DEPENDENCIES
 	queries := db.New(pool)
 	healthHandler := health.NewHandler(pool)
 	songHandler := song.NewHandler(song.NewService(queries))
 
+	// INIT ROUTER AND GLOBAL MIDDLEWARE
 	r := chi.NewRouter()
 	r.Use(middleware.Recover, middleware.Logger)
 
+	// SET FALLBACK RESPONSE FOR UNKNOWN ENDPOINT AND METHOD
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
-		httpx.Error(w, http.StatusNotFound, "not_found", "Endpoint tidak ditemukan.", nil)
+		httpx.Error(w, http.StatusNotFound, constant.CodeNotFound, constant.MsgRouteNotFound, nil)
 	})
 	r.MethodNotAllowed(func(w http.ResponseWriter, r *http.Request) {
-		httpx.Error(w, http.StatusMethodNotAllowed, "method_not_allowed", "Method tidak didukung untuk endpoint ini.", nil)
+		httpx.Error(w, http.StatusMethodNotAllowed, constant.CodeMethodNotAllowed, constant.MsgMethodNotAllowed, nil)
 	})
 
+	// SET ROUTES
 	r.Get("/", landing.Handler)
 	r.Route("/api", func(r chi.Router) {
 		r.Get("/health", healthHandler.Get)
@@ -69,18 +76,21 @@ func (s *Server) Close() {
 }
 
 func newPool(ctx context.Context, url string) (*pgxpool.Pool, error) {
+	// PARSE DATABASE URL INTO POOL CONFIGURATION
 	cfg, err := pgxpool.ParseConfig(url)
 	if err != nil {
-		// err dari ParseConfig bisa memuat password, jadi tidak disertakan.
-		return nil, errors.New("server: DATABASE_URL tidak bisa dibaca")
+		// DO NOT INCLUDE THE PARSE ERROR BECAUSE IT CAN CONTAIN THE DATABASE PASSWORD
+		return nil, errors.New(constant.MsgDatabaseURLInvalid)
 	}
+	// LIMIT POOL SIZE
 	cfg.MaxConns = maxConns
-	// Neon pooled = PgBouncer mode transaksi; mode Exec tidak memakai prepared statement bernama.
+	// USE EXEC MODE BECAUSE NEON POOLED (PGBOUNCER TRANSACTION MODE) DOES NOT SUPPORT NAMED PREPARED STATEMENTS
 	cfg.ConnConfig.DefaultQueryExecMode = pgx.QueryExecModeExec
 
+	// CREATE POOL
 	pool, err := pgxpool.NewWithConfig(ctx, cfg)
 	if err != nil {
-		return nil, fmt.Errorf("server: gagal membuat pool database: %w", err)
+		return nil, fmt.Errorf(constant.MsgPoolCreateFailed, err)
 	}
 	return pool, nil
 }
