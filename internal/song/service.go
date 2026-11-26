@@ -57,7 +57,8 @@ func (s *Service) Create(ctx context.Context, req CreateRequest) (Response, erro
 	if err != nil {
 		return Response{}, fmt.Errorf("create song: %w", err)
 	}
-	return toResponse(row), nil
+	// CREATE ROW AND LIST ROW HAVE THE SAME COLUMNS, SO CONVERT IT
+	return toResponse(db.ListSongsRow(row)), nil
 }
 
 func isUniqueViolation(err error) bool {

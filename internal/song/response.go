@@ -20,7 +20,7 @@ type listResponse struct {
 }
 
 // MAP DATABASE MODEL INTO API RESPONSE
-func toResponse(s db.Song) Response {
+func toResponse(s db.ListSongsRow) Response {
 	return Response{
 		ID:          s.ID,
 		Slug:        s.Slug,

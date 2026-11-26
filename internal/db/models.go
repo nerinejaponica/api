@@ -5,8 +5,66 @@
 package db
 
 import (
+	"encoding/json"
 	"time"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
+
+type AdminUser struct {
+	ID           int64
+	Email        string
+	PasswordHash string
+}
+
+type Artist struct {
+	ID         int64
+	Slug       string
+	NameJa     string
+	NameRomaji pgtype.Text
+}
+
+type ContentTag struct {
+	ID           int64
+	TagID        int64
+	SongID       pgtype.Int8
+	LiteratureID pgtype.Int8
+	PostID       pgtype.Int8
+}
+
+type Literature struct {
+	ID             int64
+	Slug           string
+	TitleJa        string
+	TitleID        pgtype.Text
+	OriginalAuthor pgtype.Text
+	Year           pgtype.Int2
+	AozoraUrl      pgtype.Text
+	CoverUrl       pgtype.Text
+	Body           string
+	Footnotes      json.RawMessage
+	Status         string
+	PublishedAt    *time.Time
+	UpdatedAt      time.Time
+}
+
+type Post struct {
+	ID          int64
+	Slug        string
+	Title       string
+	Excerpt     pgtype.Text
+	CoverUrl    pgtype.Text
+	Body        string
+	Status      string
+	PublishedAt *time.Time
+	UpdatedAt   time.Time
+}
+
+type SiteSetting struct {
+	Key       string
+	Value     string
+	UpdatedAt time.Time
+}
 
 type Song struct {
 	ID          int64
@@ -14,4 +72,40 @@ type Song struct {
 	TitleJa     string
 	Status      string
 	PublishedAt *time.Time
+	TitleRomaji pgtype.Text
+	TitleID     pgtype.Text
+	CoverUrl    pgtype.Text
+	Year        pgtype.Int2
+	Album       pgtype.Text
+	Description pgtype.Text
+	Lyricist    pgtype.Text
+	Composer    pgtype.Text
+	MediaLinks  json.RawMessage
+	Lyrics      json.RawMessage
+	Footnotes   json.RawMessage
+	UpdatedAt   time.Time
+}
+
+type SongArtist struct {
+	SongID   int64
+	ArtistID int64
+}
+
+type SongSource struct {
+	SongID   int64
+	SourceID int64
+}
+
+type Source struct {
+	ID         int64
+	Slug       string
+	NameJa     string
+	NameRomaji pgtype.Text
+	Kind       string
+}
+
+type Tag struct {
+	ID   int64
+	Slug string
+	Name string
 }

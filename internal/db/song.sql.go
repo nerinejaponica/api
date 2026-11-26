@@ -23,14 +23,22 @@ type CreateSongParams struct {
 	PublishedAt *time.Time
 }
 
-func (q *Queries) CreateSong(ctx context.Context, arg CreateSongParams) (Song, error) {
+type CreateSongRow struct {
+	ID          int64
+	Slug        string
+	TitleJa     string
+	Status      string
+	PublishedAt *time.Time
+}
+
+func (q *Queries) CreateSong(ctx context.Context, arg CreateSongParams) (CreateSongRow, error) {
 	row := q.db.QueryRow(ctx, createSong,
 		arg.Slug,
 		arg.TitleJa,
 		arg.Status,
 		arg.PublishedAt,
 	)
-	var i Song
+	var i CreateSongRow
 	err := row.Scan(
 		&i.ID,
 		&i.Slug,
@@ -48,16 +56,24 @@ ORDER BY published_at DESC NULLS LAST, id DESC
 LIMIT 50
 `
 
+type ListSongsRow struct {
+	ID          int64
+	Slug        string
+	TitleJa     string
+	Status      string
+	PublishedAt *time.Time
+}
+
 // Sementara semua status tampil; Fase 4 memisahkan publik (published) dan admin.
-func (q *Queries) ListSongs(ctx context.Context) ([]Song, error) {
+func (q *Queries) ListSongs(ctx context.Context) ([]ListSongsRow, error) {
 	rows, err := q.db.Query(ctx, listSongs)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Song
+	var items []ListSongsRow
 	for rows.Next() {
-		var i Song
+		var i ListSongsRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Slug,
