@@ -14,6 +14,13 @@ const (
 	MsgInvalidStatus = "harus draft atau published"
 	MsgMaxLenFmt     = "maksimal %d karakter"
 
+	MsgSchemaVersionRequired = "schemaVersion wajib diisi"
+	MsgSpanMin               = "span minimal 1"
+	MsgSpanMismatchFmt       = "total span %d tidak sama dengan jumlah baris %d"
+	MsgRubyUnbalanced        = "kurung ruby { } tidak seimbang"
+	MsgFootnoteMissingFmt    = "penanda [^%d] dipakai tapi tidak ada di footnotes"
+	MsgFootnoteUnusedFmt     = "catatan kaki %d ada di footnotes tapi tidak dipakai"
+
 	MsgBodyEmpty        = "body request kosong"
 	MsgBodyTooLargeFmt  = "body request melebihi %d byte"
 	MsgBodyInvalidJSON  = "JSON tidak valid: %w"
