@@ -62,10 +62,11 @@ jobs:
           govulncheck ./...
 
       # SECRETS COMMITTED BY ACCIDENT, SCANS THE WHOLE GIT HISTORY
+      # USE THE OPEN SOURCE BINARY, THE gitleaks-action NEEDS A PAID LICENSE FOR ORGANIZATIONS
       - name: gitleaks
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          go install github.com/zricethezav/gitleaks/v8@latest
+          gitleaks git --redact --verbose
 
   sonarqube:
     name: SonarQube scan
