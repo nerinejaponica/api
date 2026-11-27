@@ -21,6 +21,10 @@ const (
 	MsgFootnoteMissingFmt    = "penanda [^%d] dipakai tapi tidak ada di footnotes"
 	MsgFootnoteUnusedFmt     = "catatan kaki %d ada di footnotes tapi tidak dipakai"
 
+	MsgQueryInvalid    = "Parameter query tidak valid."
+	MsgLimitInvalidFmt = "harus berupa angka bulat antara 1 dan %d"
+	MsgCursorInvalid   = "cursor tidak valid"
+
 	MsgBodyEmpty        = "body request kosong"
 	MsgBodyTooLargeFmt  = "body request melebihi %d byte"
 	MsgBodyInvalidJSON  = "JSON tidak valid: %w"
