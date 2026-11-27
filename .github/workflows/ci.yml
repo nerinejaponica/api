@@ -21,9 +21,9 @@ jobs:
     name: Format, vet, test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version-file: go.mod
 
@@ -38,7 +38,7 @@ jobs:
       - name: Coverage
         run: make cover
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: coverage
           path: coverage.out
@@ -47,11 +47,11 @@ jobs:
     name: Security guardrails
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version-file: go.mod
 
@@ -76,11 +76,11 @@ jobs:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     steps:
       # SONAR NEEDS FULL HISTORY TO BLAME NEW CODE CORRECTLY
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: coverage
 
@@ -93,7 +93,8 @@ jobs:
         if: env.SONAR_TOKEN != ''
         uses: SonarSource/sonarqube-scan-action@v5
         env:
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          # EMPTY SECRET MEANS EMPTY URL, SO FALL BACK TO SONARCLOUD
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL || 'https://sonarcloud.io' }}
 
       # FAIL THIS JOB WHEN THE QUALITY GATE FAILS
       - name: Quality gate
@@ -101,4 +102,4 @@ jobs:
         uses: SonarSource/sonarqube-quality-gate-action@v1
         timeout-minutes: 5
         env:
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL || 'https://sonarcloud.io' }}
