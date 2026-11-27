@@ -7,7 +7,8 @@ MODULE="github.com/nerinejaponica/api/"
 
 # STEP 1: MERGE DUPLICATE BLOCKS (ONE PER TEST BINARY), THEN SORT BY FILE AND LINE
 # PROFILE LINE FORMAT: file.go:startLine.col,endLine.col statements count
-grep -v '^mode:' "$PROFILE" | awk -v mod="$MODULE" '
+# SKIP sqlc GENERATED CODE, IT IS EXCLUDED FROM COVERAGE ON SONAR TOO
+grep -v '^mode:' "$PROFILE" | grep -v '/internal/db/' | awk -v mod="$MODULE" '
 {
 	key = $1
 	stmts[key] = $2
