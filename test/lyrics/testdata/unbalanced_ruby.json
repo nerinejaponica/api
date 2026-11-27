@@ -1,0 +1,16 @@
+{
+  "lyrics": {
+    "schemaVersion": 1,
+    "stanzas": [
+      {
+        "lines": [
+          { "ja": "{十六夜|いざよい", "romaji": "izayoi" }
+        ],
+        "translations": [
+          { "span": 1, "text": "Bulan keenam belas" }
+        ]
+      }
+    ]
+  },
+  "footnotes": []
+}

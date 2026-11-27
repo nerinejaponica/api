@@ -1,0 +1,27 @@
+{
+  "lyrics": {
+    "schemaVersion": 1,
+    "stanzas": [
+      {
+        "lines": [
+          { "ja": "{十六夜|いざよい}の{月|つき}が", "romaji": "izayoi no tsuki ga[^1]" },
+          { "ja": "静かに{照|て}らす", "romaji": "shizuka ni terasu" }
+        ],
+        "translations": [
+          { "span": 2, "text": "Bulan keenam belas menyinari dengan tenang[^1]" }
+        ]
+      },
+      {
+        "lines": [
+          { "ja": "{夜|よる}の{底|そこ}", "romaji": "yoru no soko" }
+        ],
+        "translations": [
+          { "span": 1, "text": "Dasar malam" }
+        ]
+      }
+    ]
+  },
+  "footnotes": [
+    { "id": 1, "text": "Izayoi: bulan malam ke-16 dalam kalender lunar." }
+  ]
+}

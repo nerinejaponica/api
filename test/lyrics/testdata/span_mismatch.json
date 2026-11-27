@@ -1,0 +1,19 @@
+{
+  "lyrics": {
+    "schemaVersion": 1,
+    "stanzas": [
+      {
+        "lines": [
+          { "ja": "一", "romaji": "ichi" },
+          { "ja": "二", "romaji": "ni" },
+          { "ja": "三", "romaji": "san" }
+        ],
+        "translations": [
+          { "span": 1, "text": "Satu" },
+          { "span": 1, "text": "Dua" }
+        ]
+      }
+    ]
+  },
+  "footnotes": []
+}
