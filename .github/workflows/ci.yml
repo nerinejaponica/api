@@ -1,0 +1,103 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# LEAST PRIVILEGE: JOBS ONLY READ THE REPO
+permissions:
+  contents: read
+
+# CANCEL OLDER RUN OF THE SAME BRANCH WHEN A NEW PUSH ARRIVES
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Format, vet, test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      # SAME CHECKS AS "make check" ON LOCAL: gofmt, go vet, go test
+      - name: Check
+        run: make check
+
+      - name: Build
+        run: go build ./...
+
+      # COVERAGE TABLE IN THE LOG, coverage.out FOR SONARQUBE
+      - name: Coverage
+        run: make cover
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage.out
+
+  security:
+    name: Security guardrails
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      # KNOWN VULNERABILITIES IN DEPENDENCIES AND THE STANDARD LIBRARY
+      - name: govulncheck
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@latest
+          govulncheck ./...
+
+      # SECRETS COMMITTED BY ACCIDENT, SCANS THE WHOLE GIT HISTORY
+      - name: gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  sonarqube:
+    name: SonarQube scan
+    needs: test
+    runs-on: ubuntu-latest
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    steps:
+      # SONAR NEEDS FULL HISTORY TO BLAME NEW CODE CORRECTLY
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: coverage
+
+      # SKIP, NOT FAIL, UNTIL THE SONAR SECRET IS CONFIGURED
+      - name: Check Sonar secret
+        if: env.SONAR_TOKEN == ''
+        run: echo "::warning::SONAR_TOKEN is not set, SonarQube scan skipped."
+
+      - name: Scan
+        if: env.SONAR_TOKEN != ''
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+      # FAIL THIS JOB WHEN THE QUALITY GATE FAILS
+      - name: Quality gate
+        if: env.SONAR_TOKEN != ''
+        uses: SonarSource/sonarqube-quality-gate-action@v1
+        timeout-minutes: 5
+        env:
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
