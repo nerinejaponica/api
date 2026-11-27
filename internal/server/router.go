@@ -47,7 +47,7 @@ func New(ctx context.Context) (*Server, error) {
 
 	// INIT ROUTER AND GLOBAL MIDDLEWARE
 	r := chi.NewRouter()
-	r.Use(middleware.Recover, middleware.Logger)
+	r.Use(middleware.Recover, middleware.Logger, middleware.CORS(cfg.AllowedOrigins))
 
 	// SET FALLBACK RESPONSE FOR UNKNOWN ENDPOINT AND METHOD
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
