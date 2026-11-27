@@ -14,10 +14,10 @@ import (
 var ErrSlugTaken = errors.New(constant.MsgSlugTaken)
 
 type Service struct {
-	q *db.Queries
+	q db.Querier
 }
 
-func NewService(q *db.Queries) *Service {
+func NewService(q db.Querier) *Service {
 	return &Service{q: q}
 }
 
